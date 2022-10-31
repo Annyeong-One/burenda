@@ -206,7 +206,7 @@ int main(){
         if(d=="delete") {cb.pop_back(); cout<<"last cube was deleted, you have "<<cb.size()<<" cubes left"<<endl;}
         if(d=="camera") cam();
         if(d=="light") light_edit();
-        if(d=="advanced") advs();
+        if(d=="adv") advs();
         if(d=="render"){
             string s;
             cout<<"save name:"; cin>>s; s+=".bmp";
@@ -218,14 +218,14 @@ int main(){
             int i,j;
             f2(i,54) putc(getc(fp1),fp2);
             f2(j,h) f2(i,w){
-                    int c[3]={(int)camera[i][j][2],(int)camera[i][j][1],(int)camera[i][j][0]};
-                    if(c[0]<0)c[0]=0; if(c[0]>255)c[0]=255;
-                    if(c[1]<0)c[1]=0; if(c[1]>255)c[1]=255;
-                    if(c[2]<0)c[2]=0; if(c[2]>255)c[2]=255;
-                    putc(c[0],fp2);
-                    putc(c[1],fp2);
-                    putc(c[2],fp2);
-                }
+                int c[3]={(int)camera[i][j][2],(int)camera[i][j][1],(int)camera[i][j][0]};
+                if(c[0]<0)c[0]=0; if(c[0]>255)c[0]=255;
+                if(c[1]<0)c[1]=0; if(c[1]>255)c[1]=255;
+                if(c[2]<0)c[2]=0; if(c[2]>255)c[2]=255;
+                putc(c[0],fp2);
+                putc(c[1],fp2);
+                putc(c[2],fp2);
+            }
             fclose(fp1); fclose(fp2);
         }
         if(d=="save"){
