@@ -11,6 +11,7 @@ int aa=1,h=768,w=1024,bgc[3]; // aa는 anti-aliasing, h는 높이, w는 너비
 double cam_x,cam_y,cam_z,cam_h,cam_v; // 카메라 직교 좌표 위치, 극좌표 방향 저장
 double intensity[3],light[2]; // intensity 에는 x, y, z 방향의 밝기를, light 에는 빛의 극좌표 방향을 저장
 double camera[1920*2][1280*2][3]; // 출력할 bmp 파일 저장
+char head[54];
 // functions
 void init(){ // 초기화 : 큐브 1개 생성 및 위치 지정, 카메라 위치 및 방향, 빛의 방향 설정
     cout<<"Initializing..."<<endl;
@@ -33,6 +34,24 @@ void init(){ // 초기화 : 큐브 1개 생성 및 위치 지정, 카메라 위�
         cout<<"+                                                                                          +"<<endl;
         cout<<"=============================================================================titlescreen===="<<endl;
     } // title screen
+}
+void header(){
+    int sz=56+3*w*h;
+    head[0]='B'; head[1]='M';
+    head[2]=sz%256; sz/=256; head[3]=sz%256; sz/=256; head[4]=sz%256; sz/=256; head[5]=sz%256;
+    head[6]=0; head[7]=0; head[8]=0; head[9]=0;
+    head[10]=54; head[11]=0; head[12]=0; head[13]=0;
+    head[14]=40; head[15]=0; head[16]=0; head[17]=0;
+    head[18]=w%256; head[19]=w/256; head[20]=0; head[21]=0;
+    head[22]=h%256; head[23]=h/256; head[24]=0; head[25]=0;
+    head[26]=1; head[27]=0;
+    head[28]=24; head[29]=0;
+    head[30]=0; head[31]=0; head[32]=0; head[33]=0;
+    head[34]=w*h*3%256; head[35]=w*h*3/256%256; head[36]=w*h*3/256/256%256; head[37]=w*h*3/256/256/256;
+    head[38]=1; head[39]=0; head[40]=0; head[41]=0;
+    head[42]=1; head[43]=0; head[44]=0; head[45]=0;
+    head[46]=0; head[47]=0; head[48]=0; head[49]=0;
+    head[50]=0; head[51]=0; head[52]=0; head[53]=0;
 }
 void add(){ // 큐브 추가
     string s; cin>>s;
@@ -114,88 +133,93 @@ void renderer(){ // 렌더링
     double local_y=sin(cam_h)*cos(cam_v);
     double local_z=sin(cam_v);
     cout<<"rendering..."<<endl;
-    f2(i,w)f2(j,h){
-        double r=0,g=0,b=0;
-        f2(k,aa)f2(l,aa){
-            double dh=((i*aa+k)-(double)w/2*aa)*1.0/w/aa, dv=((j*aa+l)-(double)h/2*aa)*1.0/w/aa;
-            double local_dx=dh*sin(cam_h)-dv*cos(cam_h)*sin(cam_v)+local_x;
-            double local_dy=-dh*cos(cam_h)-dv*sin(cam_h)*sin(cam_v)+local_y;
-            double local_dz=dv*cos(cam_v)+local_z;
-            double len=sqrt(local_dx*local_dx+local_dy*local_dy+local_dz*local_dz);
-            // 솔브닥 기하 레이팅 플레가 될 테야!
-            local_dx/=len; local_dy/=len; local_dz/=len;
-            double min_d=987654321.0,col[3]={(double)bgc[0],(double)bgc[1],(double)bgc[2]};
-            f2(m,cb.size()){
-                if(cam_x<cb[m].x&&local_dx>0){
-                    double d=(cb[m].x-cam_x)/local_dx;
-                    double y=cam_y+local_dy*d;
-                    double z=cam_z+local_dz*d;
-                    if(d>0&&d<min_d&&y>=cb[m].y&&y<=cb[m].y+cb[m].ly&&z>=cb[m].z&&z<=cb[m].z+cb[m].lz){
-                        min_d=d;
-                        col[0]=cb[m].rendered_x[0][0],col[1]=cb[m].rendered_x[0][1],col[2]=cb[m].rendered_x[0][2];
+    int sz=w/10;
+    f2(i,w){
+        if(i%sz==0) cout<<i/sz*10<<"%..."<<endl;
+        f2(j,h){
+            double r=0,g=0,b=0;
+            f2(k,aa)f2(l,aa){
+                double dh=((i*aa+k)-(double)w/2*aa)*1.0/w/aa, dv=((j*aa+l)-(double)h/2*aa)*1.0/w/aa;
+                double local_dx=dh*sin(cam_h)-dv*cos(cam_h)*sin(cam_v)+local_x;
+                double local_dy=-dh*cos(cam_h)-dv*sin(cam_h)*sin(cam_v)+local_y;
+                double local_dz=dv*cos(cam_v)+local_z;
+                double len=sqrt(local_dx*local_dx+local_dy*local_dy+local_dz*local_dz);
+                // 솔브닥 기하 레이팅 플레가 될 테야!
+                local_dx/=len; local_dy/=len; local_dz/=len;
+                double min_d=987654321.0,col[3]={(double)bgc[0],(double)bgc[1],(double)bgc[2]};
+                f2(m,cb.size()){
+                    if(cam_x<cb[m].x&&local_dx>0){
+                        double d=(cb[m].x-cam_x)/local_dx;
+                        double y=cam_y+local_dy*d;
+                        double z=cam_z+local_dz*d;
+                        if(d>0&&d<min_d&&y>=cb[m].y&&y<=cb[m].y+cb[m].ly&&z>=cb[m].z&&z<=cb[m].z+cb[m].lz){
+                            min_d=d;
+                            col[0]=cb[m].rendered_x[0][0],col[1]=cb[m].rendered_x[0][1],col[2]=cb[m].rendered_x[0][2];
+                        }
+                    }
+                    else if(cam_x>cb[m].x+cb[m].lx&&local_dx<0){
+                        double d=(cb[m].x+cb[m].lx-cam_x)/local_dx;
+                        double y=cam_y+local_dy*d;
+                        double z=cam_z+local_dz*d;
+                        if(d>0&&d<min_d&&y>=cb[m].y&&y<=cb[m].y+cb[m].ly&&z>=cb[m].z&&z<=cb[m].z+cb[m].lz){
+                            min_d=d;
+                            col[0]=cb[m].rendered_x[1][0],col[1]=cb[m].rendered_x[1][1],col[2]=cb[m].rendered_x[1][2];
+                        }
+                    }
+                    if(cam_y<cb[m].y&&local_dy>0){
+                        double d=(cb[m].y-cam_y)/local_dy;
+                        double x=cam_x+local_dx*d;
+                        double z=cam_z+local_dz*d;
+                        if(d>0&&d<min_d&&x>=cb[m].x&&x<=cb[m].x+cb[m].lx&&z>=cb[m].z&&z<=cb[m].z+cb[m].lz){
+                            min_d=d;
+                            col[0]=cb[m].rendered_y[0][0],col[1]=cb[m].rendered_y[0][1],col[2]=cb[m].rendered_y[0][2];
+                        }
+                    }
+                    else if(cam_y>cb[m].y+cb[m].ly&&local_dy<0){
+                        double d=(cb[m].y+cb[m].ly-cam_y)/local_dy;
+                        double x=cam_x+local_dx*d;
+                        double z=cam_z+local_dz*d;
+                        if(d>0&&d<min_d&&x>=cb[m].x&&x<=cb[m].x+cb[m].lx&&z>=cb[m].z&&z<=cb[m].z+cb[m].lz){
+                            min_d=d;
+                            col[0]=cb[m].rendered_y[1][0],col[1]=cb[m].rendered_y[1][1],col[2]=cb[m].rendered_y[1][2];
+                        }
+                    }
+                    if(cam_z<cb[m].z&&local_dz>0){
+                        double d=(cb[m].z-cam_z)/local_dz;
+                        double x=cam_x+local_dx*d;
+                        double y=cam_y+local_dy*d;
+                        if(d>0&&d<min_d&&x>=cb[m].x&&x<=cb[m].x+cb[m].lx&&y>=cb[m].y&&y<=cb[m].y+cb[m].ly){
+                            min_d=d;
+                            col[0]=cb[m].rendered_z[0][0],col[1]=cb[m].rendered_z[0][1],col[2]=cb[m].rendered_z[0][2];
+                        }
+                    }
+                    else if(cam_z>cb[m].z+cb[m].lz&&local_dz<0){
+                        double d=(cb[m].z+cb[m].lz-cam_z)/local_dz;
+                        double x=cam_x+local_dx*d;
+                        double y=cam_y+local_dy*d;
+                        if(d>0&&d<min_d&&x>=cb[m].x&&x<=cb[m].x+cb[m].lx&&y>=cb[m].y&&y<=cb[m].y+cb[m].ly){
+                            min_d=d;
+                            col[0]=cb[m].rendered_z[1][0],col[1]=cb[m].rendered_z[1][1],col[2]=cb[m].rendered_z[1][2];
+                        }
                     }
                 }
-                else if(cam_x>cb[m].x+cb[m].lx&&local_dx<0){
-                    double d=(cb[m].x+cb[m].lx-cam_x)/local_dx;
-                    double y=cam_y+local_dy*d;
-                    double z=cam_z+local_dz*d;
-                    if(d>0&&d<min_d&&y>=cb[m].y&&y<=cb[m].y+cb[m].ly&&z>=cb[m].z&&z<=cb[m].z+cb[m].lz){
-                        min_d=d;
-                        col[0]=cb[m].rendered_x[1][0],col[1]=cb[m].rendered_x[1][1],col[2]=cb[m].rendered_x[1][2];
-                    }
-                }
-                if(cam_y<cb[m].y&&local_dy>0){
-                    double d=(cb[m].y-cam_y)/local_dy;
-                    double x=cam_x+local_dx*d;
-                    double z=cam_z+local_dz*d;
-                    if(d>0&&d<min_d&&x>=cb[m].x&&x<=cb[m].x+cb[m].lx&&z>=cb[m].z&&z<=cb[m].z+cb[m].lz){
-                        min_d=d;
-                        col[0]=cb[m].rendered_y[0][0],col[1]=cb[m].rendered_y[0][1],col[2]=cb[m].rendered_y[0][2];
-                    }
-                }
-                else if(cam_y>cb[m].y+cb[m].ly&&local_dy<0){
-                    double d=(cb[m].y+cb[m].ly-cam_y)/local_dy;
-                    double x=cam_x+local_dx*d;
-                    double z=cam_z+local_dz*d;
-                    if(d>0&&d<min_d&&x>=cb[m].x&&x<=cb[m].x+cb[m].lx&&z>=cb[m].z&&z<=cb[m].z+cb[m].lz){
-                        min_d=d;
-                        col[0]=cb[m].rendered_y[1][0],col[1]=cb[m].rendered_y[1][1],col[2]=cb[m].rendered_y[1][2];
-                    }
-                }
-                if(cam_z<cb[m].z&&local_dz>0){
-                    double d=(cb[m].z-cam_z)/local_dz;
-                    double x=cam_x+local_dx*d;
-                    double y=cam_y+local_dy*d;
-                    if(d>0&&d<min_d&&x>=cb[m].x&&x<=cb[m].x+cb[m].lx&&y>=cb[m].y&&y<=cb[m].y+cb[m].ly){
-                        min_d=d;
-                        col[0]=cb[m].rendered_z[0][0],col[1]=cb[m].rendered_z[0][1],col[2]=cb[m].rendered_z[0][2];
-                    }
-                }
-                else if(cam_z>cb[m].z+cb[m].lz&&local_dz<0){
-                    double d=(cb[m].z+cb[m].lz-cam_z)/local_dz;
-                    double x=cam_x+local_dx*d;
-                    double y=cam_y+local_dy*d;
-                    if(d>0&&d<min_d&&x>=cb[m].x&&x<=cb[m].x+cb[m].lx&&y>=cb[m].y&&y<=cb[m].y+cb[m].ly){
-                        min_d=d;
-                        col[0]=cb[m].rendered_z[1][0],col[1]=cb[m].rendered_z[1][1],col[2]=cb[m].rendered_z[1][2];
-                    }
-                }
+                r+=col[0];
+                g+=col[1];
+                b+=col[2];
             }
-            r+=col[0];
-            g+=col[1];
-            b+=col[2];
+            camera[i][j][0]=r/aa/aa;
+            camera[i][j][1]=g/aa/aa;
+            camera[i][j][2]=b/aa/aa;
         }
-        camera[i][j][0]=r/aa/aa;
-        camera[i][j][1]=g/aa/aa;
-        camera[i][j][2]=b/aa/aa;
     }
     cout<<"rendering done!"<<endl;
 }
 void advs(){
-    cout<<"current settings"<<endl<<"- anti-aliasing (command: aa) "<<aa<<"x"<<endl<<"- background color (command: bg) "<<bgc[0]<<" "<<bgc[1]<<" "<<bgc[2]<<endl;
+    cout<<"current settings"<<endl<<"- output size (command: siz) "<<w<<"x"<<h<<endl<<"- anti-aliasing (command: aa) "<<aa<<"x"<<endl<<"- background color (command: bg) "<<bgc[0]<<" "<<bgc[1]<<" "<<bgc[2]<<endl;
     string s; cin>>s;
     if(s=="aa") cin>>aa;
     if(s=="bgc") cin>>bgc[0]>>bgc[1]>>bgc[2];
+    if(s=="siz") cin>>w>>h;
 }
 int main(){
     init();
@@ -213,10 +237,12 @@ int main(){
             cout<<"rendering and saving to "<<s<<endl;
             relight();
             renderer();
+            header();
             FILE *fp1=fopen("from.bmp","rb");
             FILE *fp2=fopen(s.c_str(),"wb");
             int i,j;
-            f2(i,54) putc(getc(fp1),fp2);
+            //f2(i,54) putc(getc(fp1),fp2);
+            f2(i,54) putc(head[i],fp2);
             f2(j,h) f2(i,w){
                 int c[3]={(int)camera[i][j][2],(int)camera[i][j][1],(int)camera[i][j][0]};
                 if(c[0]<0)c[0]=0; if(c[0]>255)c[0]=255;
