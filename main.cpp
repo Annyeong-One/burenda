@@ -1,6 +1,8 @@
 #include<iostream>
+#include<iomanip>
 #include<vector>
 #include<cmath>
+#include<chrono>
 using namespace std;
 #define f2(i,x) for((i)=0; (i)<(x); (i)++)
 struct cube{
@@ -11,11 +13,11 @@ int aa=1,h=768,w=1024,bgc[3]; // aa는 anti-aliasing, h는 높이, w는 너비
 double cam_x,cam_y,cam_z,cam_h,cam_v; // 카메라 직교 좌표 위치, 극좌표 방향 저장
 double intensity[3],light[2]; // intensity 에는 x, y, z 방향의 밝기를, light 에는 빛의 극좌표 방향을 저장
 double camera[1920*2][1280*2][3]; // 출력할 bmp 파일 저장
-char head[54];
+char head[54]; // 헤더
 // functions
 void init(){ // 초기화 : 큐브 1개 생성 및 위치 지정, 카메라 위치 및 방향, 빛의 방향 설정
     cout<<"Initializing..."<<endl;
-    cb.clear(); cb.push_back({-1,-1,-1,2,2,2,255,255,255});
+    cb.clear(); cb.push_back({0,0,0,1,1,1,255,255,255});
     cam_x=cam_y=cam_z=10;
     cam_h=3.93; cam_v=-0.615;
     light[0]=4; light[1]=-1;
@@ -128,14 +130,25 @@ void light_edit(){ // 광원 재설정
     cout<<"light set!"<<endl;
 }
 void renderer(){ // 렌더링
-    int i,j,k,l,m;
+    int i,j,k,l,m,n=(int)cb.size();
     double local_x=cos(cam_h)*cos(cam_v);
     double local_y=sin(cam_h)*cos(cam_v);
     double local_z=sin(cam_v);
     cout<<"rendering..."<<endl;
-    int sz=w/10;
+    long long cnt=0,next=0;
+    chrono::system_clock::time_point from,to;
+    int bf=0;
+    from=chrono::system_clock::now();
     f2(i,w){
-        if(i%sz==0) cout<<i/sz*10<<"%..."<<endl;
+        cnt+=h*aa*aa*(int)sqrt(n);
+        if(cnt>next){
+            to=chrono::system_clock::now();
+            cout<<fixed<<setprecision(2)<<(double)i*100/w<<"%, ";
+            double t=chrono::duration_cast<chrono::milliseconds>(to-from).count();
+            cout<<"estimated time: "<<fixed<<setprecision(2)<<t*(double)(w-i)/(i)/1000<<"s"<<endl;
+            bf=i;
+            next+=10000000;
+        }
         f2(j,h){
             double r=0,g=0,b=0;
             f2(k,aa)f2(l,aa){
@@ -147,7 +160,7 @@ void renderer(){ // 렌더링
                 // 솔브닥 기하 레이팅 플레가 될 테야!
                 local_dx/=len; local_dy/=len; local_dz/=len;
                 double min_d=987654321.0,col[3]={(double)bgc[0],(double)bgc[1],(double)bgc[2]};
-                f2(m,cb.size()){
+                f2(m,n){
                     if(cam_x<cb[m].x&&local_dx>0){
                         double d=(cb[m].x-cam_x)/local_dx;
                         double y=cam_y+local_dy*d;
@@ -218,7 +231,7 @@ void advs(){
     cout<<"current settings"<<endl<<"- output size (command: siz) "<<w<<"x"<<h<<endl<<"- anti-aliasing (command: aa) "<<aa<<"x"<<endl<<"- background color (command: bg) "<<bgc[0]<<" "<<bgc[1]<<" "<<bgc[2]<<endl;
     string s; cin>>s;
     if(s=="aa") cin>>aa;
-    if(s=="bgc") cin>>bgc[0]>>bgc[1]>>bgc[2];
+    if(s=="bg") cin>>bgc[0]>>bgc[1]>>bgc[2];
     if(s=="siz") cin>>w>>h;
 }
 int main(){
@@ -238,21 +251,19 @@ int main(){
             relight();
             renderer();
             header();
-            FILE *fp1=fopen("from.bmp","rb");
-            FILE *fp2=fopen(s.c_str(),"wb");
+            FILE *fp=fopen(s.c_str(),"wb");
             int i,j;
-            //f2(i,54) putc(getc(fp1),fp2);
-            f2(i,54) putc(head[i],fp2);
+            f2(i,54) putc(head[i],fp);
             f2(j,h) f2(i,w){
                 int c[3]={(int)camera[i][j][2],(int)camera[i][j][1],(int)camera[i][j][0]};
                 if(c[0]<0)c[0]=0; if(c[0]>255)c[0]=255;
                 if(c[1]<0)c[1]=0; if(c[1]>255)c[1]=255;
                 if(c[2]<0)c[2]=0; if(c[2]>255)c[2]=255;
-                putc(c[0],fp2);
-                putc(c[1],fp2);
-                putc(c[2],fp2);
-            }
-            fclose(fp1); fclose(fp2);
+                putc(c[0],fp);
+                putc(c[1],fp);
+                putc(c[2],fp);
+            } fclose(fp);
+            cout<<"rendered and exported to "<<s<<" successfully!"<<endl;
         }
         if(d=="save"){
             int i;
