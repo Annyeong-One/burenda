@@ -14,7 +14,7 @@ double cam_x,cam_y,cam_z,cam_h,cam_v; // 카메라 직교 좌표 위치, 극좌�
 double intensity[3],light[2]; // intensity 에는 x, y, z 방향의 밝기를, light 에는 빛의 극좌표 방향을 저장
 double camera[1920*2][1280*2][3]; // 출력할 bmp 파일 저장
 char head[54]; // 헤더
-// functions
+
 void init(){ // 초기화 : 큐브 1개 생성 및 위치 지정, 카메라 위치 및 방향, 빛의 방향 설정
     cout<<"Initializing..."<<endl;
     cb.clear(); cb.push_back({0,0,0,1,1,1,255,255,255});
@@ -27,7 +27,7 @@ void init(){ // 초기화 : 큐브 1개 생성 및 위치 지정, 카메라 위�
         cout<<"============================================================================================"<<endl;
         cout<<"+                                                                                          +"<<endl;
         cout<<"+                                       < Burenda >                                        +"<<endl;
-        cout<<"+                                         v. -1.0                                          +"<<endl;
+        cout<<"+                                         v. 1.0                                           +"<<endl;
         cout<<"+                                                                                          +"<<endl;
         cout<<"+                                     Computer Science                                     +"<<endl;
         cout<<"+                                 Performance Test Project                                 +"<<endl;
@@ -73,14 +73,14 @@ void relight(){ // 각 큐브의 면별로 렌더링한 사진에 나올 색 계
             cb[i].rendered_x[0][0] = cb[i].col_r * intensity[0];
             cb[i].rendered_x[0][1] = cb[i].col_g * intensity[0];
             cb[i].rendered_x[0][2] = cb[i].col_b * intensity[0];
-            cb[i].rendered_x[1][0] = cb[i].col_r * intensity[0]*0.2;
-            cb[i].rendered_x[1][1] = cb[i].col_g * intensity[0]*0.2;
-            cb[i].rendered_x[1][2] = cb[i].col_b * intensity[0]*0.2;
+            cb[i].rendered_x[1][0] = (255-cb[i].col_r) * intensity[0]*0.2;
+            cb[i].rendered_x[1][1] = (255-cb[i].col_g) * intensity[0]*0.2;
+            cb[i].rendered_x[1][2] = (255-cb[i].col_b) * intensity[0]*0.2;
         }
         else{
-            cb[i].rendered_x[0][0] = cb[i].col_r * -intensity[0]*0.2;
-            cb[i].rendered_x[0][1] = cb[i].col_g * -intensity[0]*0.2;
-            cb[i].rendered_x[0][2] = cb[i].col_b * -intensity[0]*0.2;
+            cb[i].rendered_x[0][0] = (255-cb[i].col_r) * -intensity[0]*0.2;
+            cb[i].rendered_x[0][1] = (255-cb[i].col_g) * -intensity[0]*0.2;
+            cb[i].rendered_x[0][2] = (255-cb[i].col_b) * -intensity[0]*0.2;
             cb[i].rendered_x[1][0] = cb[i].col_r * -intensity[0];
             cb[i].rendered_x[1][1] = cb[i].col_g * -intensity[0];
             cb[i].rendered_x[1][2] = cb[i].col_b * -intensity[0];
@@ -89,14 +89,14 @@ void relight(){ // 각 큐브의 면별로 렌더링한 사진에 나올 색 계
             cb[i].rendered_y[0][0] = cb[i].col_r * intensity[1];
             cb[i].rendered_y[0][1] = cb[i].col_g * intensity[1];
             cb[i].rendered_y[0][2] = cb[i].col_b * intensity[1];
-            cb[i].rendered_y[1][0] = cb[i].col_r * intensity[1]*0.2;
-            cb[i].rendered_y[1][1] = cb[i].col_g * intensity[1]*0.2;
-            cb[i].rendered_y[1][2] = cb[i].col_b * intensity[1]*0.2;
+            cb[i].rendered_y[1][0] = (255-cb[i].col_r) * intensity[1]*0.2;
+            cb[i].rendered_y[1][1] = (255-cb[i].col_g) * intensity[1]*0.2;
+            cb[i].rendered_y[1][2] = (255-cb[i].col_b) * intensity[1]*0.2;
         }
         else{
-            cb[i].rendered_y[0][0] = cb[i].col_r * -intensity[1]*0.2;
-            cb[i].rendered_y[0][1] = cb[i].col_g * -intensity[1]*0.2;
-            cb[i].rendered_y[0][2] = cb[i].col_b * -intensity[1]*0.2;
+            cb[i].rendered_y[0][0] = (255-cb[i].col_r) * -intensity[1]*0.2;
+            cb[i].rendered_y[0][1] = (255-cb[i].col_g) * -intensity[1]*0.2;
+            cb[i].rendered_y[0][2] = (255-cb[i].col_b) * -intensity[1]*0.2;
             cb[i].rendered_y[1][0] = cb[i].col_r * -intensity[1];
             cb[i].rendered_y[1][1] = cb[i].col_g * -intensity[1];
             cb[i].rendered_y[1][2] = cb[i].col_b * -intensity[1];
@@ -105,14 +105,14 @@ void relight(){ // 각 큐브의 면별로 렌더링한 사진에 나올 색 계
             cb[i].rendered_z[0][0] = cb[i].col_r * intensity[2];
             cb[i].rendered_z[0][1] = cb[i].col_g * intensity[2];
             cb[i].rendered_z[0][2] = cb[i].col_b * intensity[2];
-            cb[i].rendered_z[1][0] = cb[i].col_r * intensity[2]*0.2;
-            cb[i].rendered_z[1][1] = cb[i].col_g * intensity[2]*0.2;
-            cb[i].rendered_z[1][2] = cb[i].col_b * intensity[2]*0.2;
+            cb[i].rendered_z[1][0] = (255-cb[i].col_r) * intensity[2]*0.2;
+            cb[i].rendered_z[1][1] = (255-cb[i].col_g) * intensity[2]*0.2;
+            cb[i].rendered_z[1][2] = (255-cb[i].col_b) * intensity[2]*0.2;
         }
         else{
-            cb[i].rendered_z[0][0] = cb[i].col_r * -intensity[2]*0.2;
-            cb[i].rendered_z[0][1] = cb[i].col_g * -intensity[2]*0.2;
-            cb[i].rendered_z[0][2] = cb[i].col_b * -intensity[2]*0.2;
+            cb[i].rendered_z[0][0] = (255-cb[i].col_r) * -intensity[2]*0.2;
+            cb[i].rendered_z[0][1] = (255-cb[i].col_g) * -intensity[2]*0.2;
+            cb[i].rendered_z[0][2] = (255-cb[i].col_b) * -intensity[2]*0.2;
             cb[i].rendered_z[1][0] = cb[i].col_r * -intensity[2];
             cb[i].rendered_z[1][1] = cb[i].col_g * -intensity[2];
             cb[i].rendered_z[1][2] = cb[i].col_b * -intensity[2];
