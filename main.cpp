@@ -126,7 +126,9 @@ void cam(){ // 카메라 재설정
 }
 void light_edit(){ // 광원 재설정
     cin>>light[0]>>light[1];
-    intensity[0]=cos(light[0])*cos(light[1]); intensity[1]=sin(light[0])*cos(light[1]); intensity[2]=sin(light[1]);
+    intensity[0]=cos(light[0])*cos(light[1]);
+    intensity[1]=sin(light[0])*cos(light[1]);
+    intensity[2]=sin(light[1]);
     cout<<"light set!"<<endl;
 }
 void renderer(){ // 렌더링
@@ -228,7 +230,8 @@ void renderer(){ // 렌더링
     cout<<"rendering done!"<<endl;
 }
 void advs(){
-    cout<<"current settings"<<endl<<"- output size (command: siz) "<<w<<"x"<<h<<endl<<"- anti-aliasing (command: aa) "<<aa<<"x"<<endl<<"- background color (command: bg) "<<bgc[0]<<" "<<bgc[1]<<" "<<bgc[2]<<endl;
+    cout<<"current settings"<<endl<<"- output size (command: siz) "<<w<<"x"<<h<<endl<<"- anti-aliasing (command: aa) "
+        <<aa<<"x"<<endl<<"- background color (command: bg) "<<bgc[0]<<" "<<bgc[1]<<" "<<bgc[2]<<endl;
     string s; cin>>s;
     if(s=="aa") cin>>aa;
     if(s=="bg") cin>>bgc[0]>>bgc[1]>>bgc[2];
@@ -274,7 +277,8 @@ int main(){
             fprintf(fp,"%lf %lf %lf %lf %lf\n",light[0],light[1],intensity[0],intensity[1],intensity[2]);
             fprintf(fp,"%lld\n",cb.size());
             f2(i,cb.size()){
-                fprintf(fp,"%lf %lf %lf %lf %lf %lf %lf %lf %lf\n",cb[i].x,cb[i].y,cb[i].z,cb[i].lx,cb[i].ly,cb[i].lz,cb[i].col_r,cb[i].col_g,cb[i].col_b);
+                fprintf(fp,"%lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+                cb[i].x,cb[i].y,cb[i].z,cb[i].lx,cb[i].ly,cb[i].lz,cb[i].col_r,cb[i].col_g,cb[i].col_b);
             }
             fclose(fp);
             cout<<"save complete!"<<endl;
@@ -290,7 +294,8 @@ int main(){
             long long n; fscanf(fp,"%lld\n",&n);
             f2(i,n){
                 cube c{};
-                fscanf(fp,"%lf %lf %lf %lf %lf %lf %lf %lf %lf\n",&c.x,&c.y,&c.z,&c.lx,&c.ly,&c.lz,&c.col_r,&c.col_g,&c.col_b);
+                fscanf(fp,"%lf %lf %lf %lf %lf %lf %lf %lf %lf\n",
+                    &c.x,&c.y,&c.z,&c.lx,&c.ly,&c.lz,&c.col_r,&c.col_g,&c.col_b);
                 cb.push_back(c);
             }
             fclose(fp);
